@@ -33,6 +33,6 @@ func (o *OpenWeatherMapRepositoryImpl) GetCurrentWeather(ctx context.Context) (m
 
 	return model.Weather{
 		Icon:      data.Weather[0].Icon,
-		UpdatedAt: time.Unix(data.Datetime, 0).In(domain.JST),
+		UpdatedAt: time.Unix(data.Datetime, 0).In(domain.Location()),
 	}, nil
 }

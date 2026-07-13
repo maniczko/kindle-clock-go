@@ -17,7 +17,17 @@ type SystemClock struct {
 
 const defaultTimezone = "Europe/Warsaw"
 
+// JST is retained for the legacy weather integration, which parses timestamps
+// from a Tokyo-based upstream API. The standalone clock never reads it.
+var JST = time.FixedZone("Asia/Tokyo", 9*60*60)
+
 func NewSystemClock() *SystemClock {
+	return &SystemClock{timezone: Location()}
+}
+
+// Location returns the configured IANA timezone. It is shared by the optional
+// weather integration so timestamps do not silently revert to a fixed offset.
+func Location() *time.Location {
 	timezoneName := os.Getenv("APP_TIMEZONE")
 	if timezoneName == "" {
 		timezoneName = defaultTimezone
@@ -28,7 +38,7 @@ func NewSystemClock() *SystemClock {
 		panic("load APP_TIMEZONE: " + err.Error())
 	}
 
-	return &SystemClock{timezone: location}
+	return location
 }
 
 func (c *SystemClock) Now() time.Time {
