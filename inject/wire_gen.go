@@ -45,8 +45,9 @@ func RoomInfoHandler(ctx context.Context) *presenter.RoomInfoHandler {
 
 func ClockHandler(ctx context.Context) *presenter.ClockHandler {
 	fontConfiguration := config.NewFontConfiguration(ctx)
+	displayConfiguration := config.NewDisplayConfiguration(ctx)
 	systemClock := domain.NewSystemClock()
-	clockHandler := presenter.NewClockHandler(fontConfiguration, systemClock)
+	clockHandler := presenter.NewClockHandler(fontConfiguration, displayConfiguration, systemClock)
 	return clockHandler
 }
 
@@ -57,7 +58,7 @@ func HealthHandler(ctx context.Context) *presenter.HealthHandler {
 
 // wire.go:
 
-var binding = wire.NewSet(domain.NewSystemClock, config.NewAwairConfiguration, config.NewAuthenticationConfiguration, config.NewFontConfiguration, config.NewNatureRemoConfiguration, config.NewOpenWeatherMapConfiguration, config.NewRedisConfiguration, config.NewSwitchBotConfiguration, api.NewAwairAPIClient, api.NewNatureRemoAPIClient, api.NewSwitchBotAPIClient, api.NewOpenWeatherMapAPIClient, cache.NewAwairCacheClient, cache.NewSwitchBotCacheClient, repository.NewAwairRepository, repository.NewNatureRemoRepository, repository.NewSwitchBotRepository, repository.NewOpenWeatherMapRepository, usecase.NewGetRoomInfoUsecase, presenter.NewRoomInfoHandler, presenter.NewClockHandler, presenter.NewHealthHandler, wire.Bind(
+var binding = wire.NewSet(domain.NewSystemClock, config.NewAwairConfiguration, config.NewAuthenticationConfiguration, config.NewFontConfiguration, config.NewDisplayConfiguration, config.NewNatureRemoConfiguration, config.NewOpenWeatherMapConfiguration, config.NewRedisConfiguration, config.NewSwitchBotConfiguration, api.NewAwairAPIClient, api.NewNatureRemoAPIClient, api.NewSwitchBotAPIClient, api.NewOpenWeatherMapAPIClient, cache.NewAwairCacheClient, cache.NewSwitchBotCacheClient, repository.NewAwairRepository, repository.NewNatureRemoRepository, repository.NewSwitchBotRepository, repository.NewOpenWeatherMapRepository, usecase.NewGetRoomInfoUsecase, presenter.NewRoomInfoHandler, presenter.NewClockHandler, presenter.NewHealthHandler, wire.Bind(
 	new(domain.Clock),
 	new(*domain.SystemClock),
 ),

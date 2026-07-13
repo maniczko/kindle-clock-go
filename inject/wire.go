@@ -20,6 +20,7 @@ var binding = wire.NewSet(
 	config.NewAwairConfiguration,
 	config.NewAuthenticationConfiguration,
 	config.NewFontConfiguration,
+	config.NewDisplayConfiguration,
 	config.NewNatureRemoConfiguration,
 	config.NewOpenWeatherMapConfiguration,
 	config.NewRedisConfiguration,

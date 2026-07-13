@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	"os"
+	"time"
+
+	_ "time/tzdata"
+)
 
 type Clock interface {
 	Now() time.Time
@@ -10,16 +15,22 @@ type SystemClock struct {
 	timezone *time.Location
 }
 
-const locationAsiaTokyo = "Asia/Tokyo"
-
-var JST = time.FixedZone(locationAsiaTokyo, 9*60*60)
+const defaultTimezone = "Europe/Warsaw"
 
 func NewSystemClock() *SystemClock {
-	return &SystemClock{
-		timezone: JST,
+	timezoneName := os.Getenv("APP_TIMEZONE")
+	if timezoneName == "" {
+		timezoneName = defaultTimezone
 	}
+
+	location, err := time.LoadLocation(timezoneName)
+	if err != nil {
+		panic("load APP_TIMEZONE: " + err.Error())
+	}
+
+	return &SystemClock{timezone: location}
 }
 
-func (*SystemClock) Now() time.Time {
-	return time.Now().In(JST)
+func (c *SystemClock) Now() time.Time {
+	return time.Now().In(c.timezone)
 }
