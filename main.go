@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/pkg/errors"
 	"github.com/y-yu/kindle-clock-go/inject"
+	"github.com/y-yu/kindle-clock-go/presenter"
 	"log/slog"
 	"net/http"
+	"os"
 )
 
 func errorMiddleware(next http.Handler) http.Handler {
@@ -28,25 +29,28 @@ func errorMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-const port = 8080
-
 func main() {
+	ctx := context.Background()
+	r := newRouter(inject.ClockHandler(ctx), inject.HealthHandler(ctx))
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	address := "0.0.0.0:" + port
+	slog.Info("Kindle clock server started", "address", address)
+	if err := http.ListenAndServe(address, r); err != nil {
+		panic(err)
+	}
+}
+
+func newRouter(clockHandler *presenter.ClockHandler, healthHandler *presenter.HealthHandler) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(errorMiddleware)
 
-	ctx := context.Background()
-	healthHandler := inject.HealthHandler(ctx)
-	roomInfoHandler := inject.RoomInfoHandler(ctx)
-	clockHandler := inject.ClockHandler(ctx)
-
 	r.Get("/health", healthHandler.Handle)
-	r.Get("/", roomInfoHandler.Handle)
+	r.Get("/", clockHandler.Handle)
 	r.Get("/clock", clockHandler.Handle)
-
-	slog.Info("Server started!", "port", port)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), r)
-	if err != nil {
-		panic(err)
-	}
+	return r
 }

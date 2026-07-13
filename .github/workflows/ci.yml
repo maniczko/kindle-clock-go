@@ -20,11 +20,8 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Format
-        run: go fmt ./...
-
-      - name: Check diff
-        run: git diff --exit-code
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
 
   test:
     name: Test
@@ -41,6 +38,12 @@ jobs:
 
       - name: Test
         run: go test -coverprofile=coverage.txt ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build
+        run: go build ./...
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7

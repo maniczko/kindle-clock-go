@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: kindle-clock-k4
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_TIMEZONE
+        value: Europe/Warsaw
+      - key: DISPLAY_WIDTH
+        value: "600"
+      - key: DISPLAY_HEIGHT
+        value: "800"
+      - key: DISPLAY_ROTATION
+        value: "90"
